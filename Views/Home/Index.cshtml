@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var channels = ViewBag.Channels as List<string>;
+    var selectedMessages = ViewBag.SelectedMessages as List<string>;
+    var selectedChannelName = ViewBag.SelectedChannelName as string;
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form asp-action="CreateChannel" method="post" class="mb-3">
+                        <div class="input-group">
+                            <input type="text" name="channelName" class="form-control" placeholder="Enter channel name..." required />
+                            <button class="btn btn-success" type="submit">Create</button>
+                        </div>
+                    </form>
+                    <hr />
+                    <h5 class="text-primary">Existing Channels</h5>
+                    @if (channels != null && channels.Count > 0)
+                    {
+                        <ul class="list-group">
+                            @foreach (var channel in channels)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <form asp-action="SelectChannel" method="post" style="display: inline;">
+                                        <input type="hidden" name="channelName" value="@channel" />
+                                        <button type="submit" class="btn btn-link">@channel</button>
+                                    </form>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No channels available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            @if (!string.IsNullOrEmpty(selectedChannelName))
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h4>Messages for: <strong>@selectedChannelName</strong></h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group mb-3">
+                            @if (selectedMessages != null && selectedMessages.Count > 0)
+                            {
+                                @foreach (var message in selectedMessages)
+                                {
+                                    <li class="list-group-item">@message</li>
+                                }
+                            }
+                            else
+                            {
+                                <li class="list-group-item text-muted">No messages in this channel.</li>
+                            }
+                        </ul>
+                        <form asp-action="SendMessage" method="post">
+                            <div class="input-group">
+                                <input type="hidden" name="channelName" value="@selectedChannelName" />
+                                <input type="text" name="message" class="form-control" placeholder="Enter message..." required />
+                                <button class="btn btn-primary" type="submit">Send</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <h5>Select a channel to view messages</h5>
+                </div>
+            }
+        </div>
+    </div>
+</div>
